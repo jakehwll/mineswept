@@ -45,27 +45,6 @@ const Button = ({
       var tickSound = new Audio("/audio/tick.wav");
       tickSound.play();
     }
-
-    // TODO
-    const width = 9
-    const height = 12
-    const size = width * height
-    // TODO
-
-    if ( surrounds === 0 ) {
-      // Add numbers!
-      const n = parseInt(el.getAttribute("data-id") ?? '');
-      const numbers = [-1, 1, -width, width];
-      for (const x in numbers) {
-        let num = numbers[x];
-        let i = n + num;
-        console.log(i)
-        const test = document.querySelector(`[data-id="${i}"]`)
-        if ( test && test.getAttribute('data-surround') === "0" ) {
-          test.className = ["active", ...el.className.split(" ")].join(" ");
-        }
-      }
-    }
   });
 
   return el;
