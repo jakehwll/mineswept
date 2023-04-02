@@ -76,19 +76,11 @@
 <path d="M6 13V12H7V13H6Z" fill="#800000"/>
 <path d="M8 13V12H9V13H8Z" fill="#800000"/>
 <path d="M9 12V11H10V12H9Z" fill="#800000"/>
-<path d="M9 4H10V9H9V4Z" fill="#FF0000"/>
-<path d="M10 3H11V10H10V3Z" fill="#FF0000"/>
-<path d="M11 2H12V11H11V2Z" fill="#FF0000"/>
-<path d="M9 14H10V19H9V14Z" fill="#FF0000"/>
-<path d="M10 13H11V20H10V13Z" fill="#FF0000"/>
-<path d="M11 12H12V21H11V12Z" fill="#FF0000"/>
-<path d="M4 4H3V9H4V4Z" fill="#FF0000"/>
-<path d="M3 3H2V10H3V3Z" fill="#FF0000"/>
-<path d="M2 2H1V11H2V2Z" fill="#FF0000"/>
-<path d="M4 14H3V19H4V14Z" fill="#FF0000"/>
-<path d="M3 13H2V20H3V13Z" fill="#FF0000"/>
-<path d="M2 12H1V21H2V12Z" fill="#FF0000"/>
 <path d="M2 1.5H3.5M11 1.5H9.5M3.5 1.5V2.5H4.5M3.5 1.5H9.5M9.5 1.5V2.5H8.5M4.5 2.5V3.5H8.5V2.5M4.5 2.5H8.5" stroke="#FF0000"/>
 <path d="M11 21.5H9.5M2 21.5H3.5M9.5 21.5V20.5H8.5M9.5 21.5H3.5M3.5 21.5V20.5H4.5M8.5 20.5V19.5H4.5V20.5M8.5 20.5H4.5" stroke="#FF0000"/>
 <path d="M11 11.5H9.5M2 11.5H3.5M3.5 11.5V10.5H9.5V11.5M3.5 11.5H9.5M3.5 11.5V12.5H9.5V11.5" stroke="#FF0000"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12 2V11H11V10H10V9H9V4H10V3H11V2H12Z" fill="#FF0000"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12 12V21H11V20H10V19H9V14H10V13H11V12H12Z" fill="#FF0000"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1 2V11H2V10H3V9H4V4H3V3H2V2H1Z" fill="#FF0000"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1 12V21H2V20H3V19H4V14H3V13H2V12H1Z" fill="#FF0000"/>
 </svg>
