@@ -1,12 +1,10 @@
 import './style.css'
 
-const Digit = ({}) => {
+const Digit = (digits: string) => {
   const el = document.createElement("div");
   el.className = "digit"
 
-  const string = "123";
-
-  string.split("").map((v) => {string.split('')
+  digits.split("").map((v) => {digits.split("");
     const el2 = document.createElement("img");
     el2.setAttribute('src', `/digit/${v}.svg`)
     el.appendChild(el2);
@@ -46,6 +44,27 @@ const Button = ({
     } else {
       var tickSound = new Audio("/audio/tick.wav");
       tickSound.play();
+    }
+
+    // TODO
+    const width = 9
+    const height = 12
+    const size = width * height
+    // TODO
+
+    if ( surrounds === 0 ) {
+      // Add numbers!
+      const n = parseInt(el.getAttribute("data-id") ?? '');
+      const numbers = [-1, 1, -width, width];
+      for (const x in numbers) {
+        let num = numbers[x];
+        let i = n + num;
+        console.log(i)
+        const test = document.querySelector(`[data-id="${i}"]`)
+        if ( test && test.getAttribute('data-surround') === "0" ) {
+          test.className = ["active", ...el.className.split(" ")].join(" ");
+        }
+      }
     }
   });
 
@@ -143,7 +162,7 @@ const app = document.querySelector("#app");
 
 const header = document.createElement('header');
 
-const bombs = Digit({});
+const bombs = Digit('000');
 
 const status = document.createElement("button");
 status.setAttribute('type', 'button')
@@ -152,7 +171,8 @@ const statusImage = document.createElement("img");
 statusImage.setAttribute('src', '/faces/smile.svg')
 status.appendChild(statusImage);
 
-const timer = Digit({});
+const timer = document.createElement('div');
+timer.className = "timer"
 
 header.appendChild(bombs)
 header.appendChild(status)
@@ -166,3 +186,12 @@ if ( app ) {
   app.appendChild(header);
   app.appendChild(board);
 }
+
+
+let time = 0;
+
+setInterval(() => {
+  time = time + 1;
+  timer.innerHTML = ""
+  timer.appendChild(Digit(String(time).padStart(3, "0")))
+}, 1000);
