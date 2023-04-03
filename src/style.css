@@ -24,6 +24,10 @@ html {
   justify-content: center;
 }
 
+body {
+  display: flex;
+}
+
 header {
   display: flex;
   align-items: center;
