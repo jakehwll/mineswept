@@ -1,4 +1,5 @@
 import { Digit, Row, Button } from './components';
+import { preloadImage } from './helpers/assets';
 
 export interface MatrixState {
   isClicked: boolean
@@ -6,6 +7,47 @@ export interface MatrixState {
   isFlagged: boolean
   surroundingBombs: number
 }
+
+const images = [
+  '/board/bomb-exploded.svg',
+  '/board/bomb.svg',
+  '/board/button.svg',
+  '/board/field.svg',
+  '/board/flag.svg',
+  '/board/number-1.svg',
+  '/board/number-2.svg',
+  '/board/number-3.svg',
+  '/board/number-4.svg',
+  '/board/number-5.svg',
+  '/board/number-6.svg',
+  '/board/number-7.svg',
+  '/board/number-8.svg',
+  '/border/inset-thick.svg',
+  '/border/inset-thin.svg',
+  '/border/inset.svg',
+  '/border/outset-thick.svg',
+  '/border/outset-thin.svg',
+  '/border/outset.svg',
+  '/digit/-.svg',
+  '/digit/0.svg',
+  '/digit/1.svg',
+  '/digit/2.svg',
+  '/digit/3.svg',
+  '/digit/4.svg',
+  '/digit/5.svg',
+  '/digit/6.svg',
+  '/digit/7.svg',
+  '/digit/8.svg',
+  '/digit/9.svg',
+  '/digit/_.svg',
+  '/faces/dead.svg',
+  '/faces/shock.svg',
+  '/faces/smile.svg',
+  '/faces/sunglasses.svg',
+  '/favicon.svg',
+]
+
+images.map((url) => preloadImage(url))
 
 class Mineswept {
   node: Element;
