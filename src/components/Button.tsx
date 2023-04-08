@@ -39,7 +39,6 @@ const Button = ({
           clicked: v.isBomb ? true : v.isClicked,
         };
       });
-      console;
     } else {
       var tickSound = new Audio("/audio/tick.wav");
       tickSound.play();
