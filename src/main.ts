@@ -159,7 +159,7 @@ class Mineswept {
     this.initHeader();
     this.initBoard();
     this.initTimer();
-    this.generateGrid(9, 12);
+    this.generateGrid(this.width, this.height);
   }
 
   generateGrid = (width: number, height: number) => {
