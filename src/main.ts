@@ -34,7 +34,6 @@ const Button = ({
 }) => {
   const el = document.createElement("button");
   el.className = [""].join(" ");
-  el.innerHTML = `${dataId}`
 
   el.setAttribute("data-id", `${dataId}`);
   el.setAttribute("data-surround", `${surrounds}`);
@@ -191,6 +190,10 @@ class Mineswept {
         const newIndex = index + x;
         if ( matrix[newIndex].surrounds === 0 && !(matrix[newIndex].bomb) ) {
           this.revealNearby({ index: index + x, width, size, matrix, setMatrix });
+        } else {
+          const newMatrix = matrix;
+          newMatrix[newIndex].clicked = true;
+          setMatrix(newMatrix);
         }
       });
     }
