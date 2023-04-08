@@ -109,6 +109,10 @@ header button img {
   background-image: url('/board/bomb-exploded.svg');
 }
 
+.grid button.flagged {
+  background-image: url('/board/flag.svg');
+}
+
 .grid button.active[data-surround="1"] { background-image: url('/board/number-1.svg'); }
 .grid button.active[data-surround="2"] { background-image: url('/board/number-2.svg'); }
 .grid button.active[data-surround="3"] { background-image: url('/board/number-3.svg'); }

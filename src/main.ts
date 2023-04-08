@@ -3,6 +3,7 @@ import { Digit, Row, Button } from './components';
 export interface MatrixState {
   isClicked: boolean
   isBomb: boolean
+  isFlagged: boolean
   surroundingBombs: number
 }
 

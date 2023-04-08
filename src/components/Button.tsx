@@ -8,6 +8,7 @@ const Button = ({
   setMatrix,
   isClicked,
   isBomb,
+  isFlagged,
   surroundingBombs,
 }: {
   dataId: number;
@@ -24,6 +25,7 @@ const Button = ({
 
   if (isBomb) el.className = ["bomb", ...el.className.split(" ")].join(" ");
   if (isClicked) el.className = ["active", ...el.className.split(" ")].join(" ");
+  if (isFlagged) el.className = ["flagged", ...el.className.split(" ")].join(" ");
 
   el.addEventListener("click", () => {
     if (isClicked) return;
@@ -36,7 +38,7 @@ const Button = ({
       newMatrix = newMatrix.map((v) => {
         return {
           ...v,
-          clicked: v.isBomb ? true : v.isClicked,
+          isClicked: v.isBomb ? true : v.isClicked,
         };
       });
     } else {
@@ -53,6 +55,21 @@ const Button = ({
 
     rehydrate();
   });
+
+  el.addEventListener("contextmenu", (event) => {
+    event.preventDefault()
+
+    let newMatrix = matrix
+
+    newMatrix[dataId] = {
+      ...newMatrix[dataId],
+      isFlagged: !newMatrix[dataId].isFlagged
+    }
+
+    setMatrix(newMatrix)
+
+    rehydrate();
+  })
 
   return el;
 };
