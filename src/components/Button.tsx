@@ -33,9 +33,6 @@ const Button = ({
     if (isBomb) {
       var loseSound = new Audio("/audio/lose.wav");
       loseSound.play();
-      document.querySelectorAll(".bomb").forEach((el) => {
-        el.className = ["active", ...el.className.split(" ")].join(" ");
-      });
       newMatrix = newMatrix.map((v) => {
         return {
           ...v,
