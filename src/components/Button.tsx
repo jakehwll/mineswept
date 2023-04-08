@@ -6,9 +6,9 @@ const Button = ({
   revealNearby,
   matrix,
   setMatrix,
-  clicked,
-  bomb,
-  surrounds,
+  isClicked,
+  isBomb,
+  surroundingBombs,
 }: {
   dataId: number;
   rehydrate(): void;
@@ -20,29 +20,26 @@ const Button = ({
   el.className = [""].join(" ");
 
   el.setAttribute("data-id", `${dataId}`);
-  el.setAttribute("data-surround", `${surrounds}`);
+  el.setAttribute("data-surround", `${surroundingBombs}`);
 
-  if (bomb) el.className = ["bomb", ...el.className.split(" ")].join(" ");
-  if (clicked) el.className = ["active", ...el.className.split(" ")].join(" ");
+  if (isBomb) el.className = ["bomb", ...el.className.split(" ")].join(" ");
+  if (isClicked) el.className = ["active", ...el.className.split(" ")].join(" ");
 
   el.addEventListener("click", () => {
-    if (clicked) return;
+    if (isClicked) return;
 
     let newMatrix = matrix;
 
-    if (bomb) {
+    if (isBomb) {
       var loseSound = new Audio("/audio/lose.wav");
       loseSound.play();
       document.querySelectorAll(".bomb").forEach((el) => {
         el.className = ["active", ...el.className.split(" ")].join(" ");
       });
       newMatrix = newMatrix.map((v) => {
-        if (v.bomb) {
-          console.log(v);
-        }
         return {
           ...v,
-          clicked: v.bomb ? true : v.clicked,
+          clicked: v.isBomb ? true : v.isClicked,
         };
       });
       console;
@@ -51,8 +48,8 @@ const Button = ({
       tickSound.play();
     }
 
-    if ( surrounds !== 0 ) {
-      newMatrix[dataId].clicked = true;
+    if ( surroundingBombs !== 0 ) {
+      newMatrix[dataId].isClicked = true;
       setMatrix(newMatrix);
     } else {
       revealNearby({ index: dataId });

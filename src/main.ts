@@ -2,9 +2,9 @@ import { Digit, Row, Button } from './components';
 import './style.css'
 
 export interface MatrixState {
-  clicked: boolean
-  bomb: boolean
-  surrounds: number
+  isClicked: boolean
+  isBomb: boolean
+  surroundingBombs: number
 }
 
 class Mineswept {
@@ -81,13 +81,13 @@ class Mineswept {
     matrix: MatrixState[];
     setMatrix(val: MatrixState[]): void;
   }) {
-    if (matrix[index].clicked) return;
+    if (matrix[index].isClicked) return;
 
     const newMatrix = matrix
-    newMatrix[index].clicked = true;
+    newMatrix[index].isClicked = true;
     setMatrix(newMatrix)
 
-    if ( matrix[index].surrounds === 0 && !(matrix[index].bomb) ) {
+    if ( matrix[index].surroundingBombs === 0 && !(matrix[index].isBomb) ) {
       const numbers = [-1, 1, -width, width];
       const validNumbers = numbers.filter((x) => {
         const newIndex = index + x;
@@ -102,11 +102,11 @@ class Mineswept {
 
       validNumbers.map((x) => {
         const newIndex = index + x;
-        if ( matrix[newIndex].surrounds === 0 && !(matrix[newIndex].bomb) ) {
+        if ( matrix[newIndex].surroundingBombs === 0 && !(matrix[newIndex].isBomb) ) {
           this.revealNearby({ index: index + x, width, size, matrix, setMatrix });
         } else {
           const newMatrix = matrix;
-          newMatrix[newIndex].clicked = true;
+          newMatrix[newIndex].isClicked = true;
           setMatrix(newMatrix);
         }
       });
@@ -123,9 +123,9 @@ class Mineswept {
   generateGrid = (width: number, height: number) => {
     const size = width * height;
     const field: MatrixState[] = Array(size).fill({
-      clicked: false,
-      bomb: false,
-      surrounds: 0,
+      isClicked: false,
+      isBomb: false,
+      surroundingBombs: 0,
     });
 
     const bombs = Math.round((10 / size) * size);
@@ -139,7 +139,7 @@ class Mineswept {
       // Make it a bomb.
       field[pos] = {
         ...field[pos],
-        bomb: true,
+        isBomb: true,
       };
       // Remove it from valid locations so we don't duplicate.
       validBombLocations.splice(pos, 1);
@@ -148,7 +148,7 @@ class Mineswept {
     // Add numbers!
     for (var n = 0; n < size; n++) {
       let fVal = field[n];
-      if (fVal.bomb === true) continue; // Ignore if bomb
+      if (fVal.isBomb === true) continue; // Ignore if bomb
       var finalNumber = 0;
 
       const numbers = [
@@ -178,12 +178,12 @@ class Mineswept {
         )
           continue;
         if (field[i] === undefined) continue;
-        if (field[i].bomb === true) finalNumber++;
+        if (field[i].isBomb === true) finalNumber++;
       }
 
       field[n] = {
         ...field[n],
-        surrounds: finalNumber,
+        surroundingBombs: finalNumber,
       };
     }
 
