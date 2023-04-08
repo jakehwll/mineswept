@@ -47,6 +47,7 @@ const Button = ({
     }
 
     if ( surroundingBombs !== 0 ) {
+      if ( newMatrix[dataId].isFlagged ) return
       newMatrix[dataId].isClicked = true;
       setMatrix(newMatrix);
     } else {
