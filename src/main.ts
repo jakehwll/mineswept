@@ -16,6 +16,7 @@ const Digit = (digits: string) => {
 const Button = ({
   dataId,
   rehydrate,
+  revealNearby,
   matrix,
   setMatrix,
   clicked,
@@ -24,6 +25,7 @@ const Button = ({
 }: {
   dataId: number;
   rehydrate(): void;
+  revealNearby({ index }: { index: number; }): void;
   matrix: MatrixState[];
   setMatrix(val: MatrixState[]): void;
   clicked: boolean;
@@ -32,6 +34,7 @@ const Button = ({
 }) => {
   const el = document.createElement("button");
   el.className = [""].join(" ");
+  el.innerHTML = `${dataId}`
 
   el.setAttribute("data-id", `${dataId}`);
   el.setAttribute("data-surround", `${surrounds}`);
@@ -51,22 +54,26 @@ const Button = ({
         el.className = ["active", ...el.className.split(" ")].join(" ");
       });
       newMatrix = newMatrix.map((v) => {
-        if ( v.bomb ) {
-          console.log(v)
+        if (v.bomb) {
+          console.log(v);
         }
         return {
           ...v,
           clicked: v.bomb ? true : v.clicked,
         };
-      })
-      console
+      });
+      console;
     } else {
       var tickSound = new Audio("/audio/tick.wav");
       tickSound.play();
     }
 
-    newMatrix[dataId].clicked = true;
-    setMatrix(newMatrix);
+    // if ( surrounds !== 0 ) {
+    //   newMatrix[dataId].clicked = true;
+    //   setMatrix(newMatrix);
+    // } else {
+      revealNearby({ index: dataId });
+    // }
 
     rehydrate();
   });
@@ -92,14 +99,14 @@ class Mineswept {
   width: number;
   height: number;
 
-  matrix: MatrixState[] | undefined
+  matrix: MatrixState[] | undefined;
 
   header: HTMLElement | undefined;
   board: HTMLElement | undefined;
   grid: HTMLElement | undefined;
   timer: HTMLElement | undefined;
 
-  bombs: number | undefined
+  bombs: number | undefined;
 
   constructor(node: Element, width: number, height: number) {
     this.node = node;
@@ -123,7 +130,7 @@ class Mineswept {
 
     const timer = document.createElement("div");
     timer.className = "timer";
-    this.timer = timer
+    this.timer = timer;
 
     header.appendChild(bombs);
     header.appendChild(status);
@@ -135,7 +142,7 @@ class Mineswept {
     const board = document.createElement("section");
     board.className = "board";
     this.node.appendChild(board);
-    this.board = board
+    this.board = board;
   }
 
   initTimer() {
@@ -143,9 +150,50 @@ class Mineswept {
     this.timer!.appendChild(Digit(String(time).padStart(3, "0")));
     setInterval(() => {
       time = time + 1;
-      this.timer!.innerHTML = ""
+      this.timer!.innerHTML = "";
       this.timer!.appendChild(Digit(String(time).padStart(3, "0")));
     }, 1000);
+  }
+
+  revealNearby({
+    index,
+    width,
+    size,
+    matrix,
+    setMatrix,
+  }: {
+    index: number;
+    width: number;
+    size: number;
+    matrix: MatrixState[];
+    setMatrix(val: MatrixState[]): void;
+  }) {
+    if (matrix[index].clicked) return;
+
+    const newMatrix = matrix
+    newMatrix[index].clicked = true;
+    setMatrix(newMatrix)
+
+    if ( matrix[index].surrounds === 0 && !(matrix[index].bomb) ) {
+      const numbers = [-1, 1, -width, width];
+      const validNumbers = numbers.filter((x) => {
+        const newIndex = index + x;
+        // out of bound
+        if (newIndex < 0 || newIndex + 1 > size) return;
+        // start of row
+        if (!(newIndex % width) && x === 1 ) return;
+        // end of row
+        if (!((newIndex + 1) % width) && x === -1) return;
+        return x;
+      });
+
+      validNumbers.map((x) => {
+        const newIndex = index + x;
+        if ( matrix[newIndex].surrounds === 0 && !(matrix[newIndex].bomb) ) {
+          this.revealNearby({ index: index + x, width, size, matrix, setMatrix });
+        }
+      });
+    }
   }
 
   init() {
@@ -160,7 +208,7 @@ class Mineswept {
     const field: MatrixState[] = Array(size).fill({
       clicked: false,
       bomb: false,
-      surrounds: 0
+      surrounds: 0,
     });
 
     const bombs = Math.round((10 / size) * size);
@@ -174,7 +222,7 @@ class Mineswept {
       // Make it a bomb.
       field[pos] = {
         ...field[pos],
-        bomb: true
+        bomb: true,
       };
       // Remove it from valid locations so we don't duplicate.
       validBombLocations.splice(pos, 1);
@@ -218,21 +266,20 @@ class Mineswept {
 
       field[n] = {
         ...field[n],
-        surrounds: finalNumber
+        surrounds: finalNumber,
       };
     }
 
-    this.matrix = field
-    this.rehydrate()
+    this.matrix = field;
+    this.rehydrate();
   };
 
   rehydrate() {
-    console.log('test!')
     if (this.grid === undefined) {
       const grid = document.createElement("div");
       grid.className = "grid";
-      this.board?.appendChild(grid)
-      this.grid = grid
+      this.board?.appendChild(grid);
+      this.grid = grid;
     }
     const rows = Array(this.height)
       .fill(0)
@@ -242,19 +289,28 @@ class Mineswept {
             .fill(0)
             .map((_v, columnIndex) => {
               const dataId = rowIndex * this.width + columnIndex;
-              const data = this.matrix![dataId]
+              const data = this.matrix![dataId];
               return Button({
                 dataId: dataId,
                 matrix: this.matrix!,
-                setMatrix: (matrix: MatrixState[]) => this.matrix = matrix,
+                setMatrix: (matrix: MatrixState[]) => (this.matrix = matrix),
+                revealNearby: ({ index }: { index: number }) =>
+                  this.revealNearby({
+                    index,
+                    width: this.width,
+                    size: this.width * this.height,
+                    matrix: this.matrix!,
+                    setMatrix: (matrix: MatrixState[]) =>
+                      (this.matrix = matrix),
+                  }),
                 rehydrate: () => this.rehydrate(),
-                ...data
+                ...data,
               });
             }),
           `${rowIndex}`
         );
       });
-    this.grid.innerHTML = ""
+    this.grid.innerHTML = "";
     rows.map((v) => this.grid!.appendChild(v));
   }
 }
