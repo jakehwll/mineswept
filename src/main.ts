@@ -1,5 +1,4 @@
 import { Digit, Row, Button } from './components';
-import './style.css'
 
 export interface MatrixState {
   isClicked: boolean
