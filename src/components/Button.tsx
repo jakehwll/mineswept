@@ -28,7 +28,7 @@ const Button = ({
   if (isFlagged) el.className = ["flagged", ...el.className.split(" ")].join(" ");
 
   el.addEventListener("click", () => {
-    if (isClicked) return;
+    if (isClicked || isFlagged) return;
 
     let newMatrix = matrix;
 
@@ -58,6 +58,8 @@ const Button = ({
 
   el.addEventListener("contextmenu", (event) => {
     event.preventDefault()
+
+    if ( isClicked ) return
 
     let newMatrix = matrix
 
