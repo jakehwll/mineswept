@@ -14,7 +14,8 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
-    "noImplicitThis": false
+    "noImplicitThis": false,
+    "jsx": "preserve"
   },
   "include": ["src"]
 }

@@ -1,93 +1,7 @@
+import { Digit, Row, Button } from './components';
 import './style.css'
 
-const Digit = (digits: string) => {
-  const el = document.createElement("div");
-  el.className = "digit"
-
-  digits.split("").map((v) => {digits.split("");
-    const el2 = document.createElement("img");
-    el2.setAttribute('src', `/digit/${v}.svg`)
-    el.appendChild(el2);
-  });
-
-  return el
-}
-
-const Button = ({
-  dataId,
-  rehydrate,
-  revealNearby,
-  matrix,
-  setMatrix,
-  clicked,
-  bomb,
-  surrounds,
-}: {
-  dataId: number;
-  rehydrate(): void;
-  revealNearby({ index }: { index: number; }): void;
-  matrix: MatrixState[];
-  setMatrix(val: MatrixState[]): void;
-  clicked: boolean;
-  bomb: boolean;
-  surrounds: number;
-}) => {
-  const el = document.createElement("button");
-  el.className = [""].join(" ");
-
-  el.setAttribute("data-id", `${dataId}`);
-  el.setAttribute("data-surround", `${surrounds}`);
-
-  if (bomb) el.className = ["bomb", ...el.className.split(" ")].join(" ");
-  if (clicked) el.className = ["active", ...el.className.split(" ")].join(" ");
-
-  el.addEventListener("click", () => {
-    if (clicked) return;
-
-    let newMatrix = matrix;
-
-    if (bomb) {
-      var loseSound = new Audio("/audio/lose.wav");
-      loseSound.play();
-      document.querySelectorAll(".bomb").forEach((el) => {
-        el.className = ["active", ...el.className.split(" ")].join(" ");
-      });
-      newMatrix = newMatrix.map((v) => {
-        if (v.bomb) {
-          console.log(v);
-        }
-        return {
-          ...v,
-          clicked: v.bomb ? true : v.clicked,
-        };
-      });
-      console;
-    } else {
-      var tickSound = new Audio("/audio/tick.wav");
-      tickSound.play();
-    }
-
-    // if ( surrounds !== 0 ) {
-    //   newMatrix[dataId].clicked = true;
-    //   setMatrix(newMatrix);
-    // } else {
-      revealNearby({ index: dataId });
-    // }
-
-    rehydrate();
-  });
-
-  return el;
-};
-
-const Row = (children: HTMLElement[], id: string) => {
-  const el = document.createElement("div");
-  el.id = `row-${id}`;
-  children.map((v) => el.appendChild(v));
-  return el;
-};
-
-interface MatrixState {
+export interface MatrixState {
   clicked: boolean
   bomb: boolean
   surrounds: number
@@ -319,7 +233,6 @@ class Mineswept {
 }
 
 const canvas1 = document.querySelector("#app1");
-// const canvas2 = document.querySelector("#app2");
 
 if ( canvas1 ) {
   new Mineswept(canvas1, 9, 12);
