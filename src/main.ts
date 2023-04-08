@@ -15,25 +15,34 @@ const Digit = (digits: string) => {
 
 const Button = ({
   dataId,
+  rehydrate,
+  matrix,
+  setMatrix,
+  clicked,
   bomb,
   surrounds,
 }: {
-  dataId: string;
+  dataId: number;
+  rehydrate(): void;
+  matrix: MatrixState[];
+  setMatrix(val: MatrixState[]): void;
+  clicked: boolean;
   bomb: boolean;
   surrounds: number;
 }) => {
   const el = document.createElement("button");
   el.className = [""].join(" ");
-  el.setAttribute("data-id", dataId);
+
+  el.setAttribute("data-id", `${dataId}`);
   el.setAttribute("data-surround", `${surrounds}`);
 
-  if (bomb) {
-    el.className = ["bomb", ...el.className.split(" ")].join(" ");
-  }
+  if (bomb) el.className = ["bomb", ...el.className.split(" ")].join(" ");
+  if (clicked) el.className = ["active", ...el.className.split(" ")].join(" ");
 
   el.addEventListener("click", () => {
-    if (el.classList.contains("active")) return;
-    el.className = ["active", ...el.className.split(" ")].join(" ");
+    if (clicked) return;
+
+    let newMatrix = matrix;
 
     if (bomb) {
       var loseSound = new Audio("/audio/lose.wav");
@@ -41,10 +50,25 @@ const Button = ({
       document.querySelectorAll(".bomb").forEach((el) => {
         el.className = ["active", ...el.className.split(" ")].join(" ");
       });
+      newMatrix = newMatrix.map((v) => {
+        if ( v.bomb ) {
+          console.log(v)
+        }
+        return {
+          ...v,
+          clicked: v.bomb ? true : v.clicked,
+        };
+      })
+      console
     } else {
       var tickSound = new Audio("/audio/tick.wav");
       tickSound.play();
     }
+
+    newMatrix[dataId].clicked = true;
+    setMatrix(newMatrix);
+
+    rehydrate();
   });
 
   return el;
@@ -57,17 +81,25 @@ const Row = (children: HTMLElement[], id: string) => {
   return el;
 };
 
+interface MatrixState {
+  clicked: boolean
+  bomb: boolean
+  surrounds: number
+}
+
 class Mineswept {
   node: Element;
   width: number;
   height: number;
 
-  matrix: number[] | undefined
+  matrix: MatrixState[] | undefined
 
   header: HTMLElement | undefined;
   board: HTMLElement | undefined;
   grid: HTMLElement | undefined;
   timer: HTMLElement | undefined;
+
+  bombs: number | undefined
 
   constructor(node: Element, width: number, height: number) {
     this.node = node;
@@ -125,8 +157,14 @@ class Mineswept {
 
   generateGrid = (width: number, height: number) => {
     const size = width * height;
-    const field = Array(size).fill(-1);
+    const field: MatrixState[] = Array(size).fill({
+      clicked: false,
+      bomb: false,
+      surrounds: 0
+    });
+
     const bombs = Math.round((10 / size) * size);
+    this.bombs = bombs;
 
     // Add bombs!
     const validBombLocations = [...Array(size).keys()];
@@ -134,7 +172,10 @@ class Mineswept {
       // Get a random location.
       var pos = Math.round(Math.random() * (validBombLocations.length - 0) + 0);
       // Make it a bomb.
-      field[pos] = 9;
+      field[pos] = {
+        ...field[pos],
+        bomb: true
+      };
       // Remove it from valid locations so we don't duplicate.
       validBombLocations.splice(pos, 1);
     }
@@ -142,7 +183,7 @@ class Mineswept {
     // Add numbers!
     for (var n = 0; n < size; n++) {
       let fVal = field[n];
-      if (fVal == 9) continue; // Ignore if bomb
+      if (fVal.bomb === true) continue; // Ignore if bomb
       var finalNumber = 0;
 
       const numbers = [
@@ -171,10 +212,14 @@ class Mineswept {
           (num == -1 || num == -(width + 1) || num == width - 1)
         )
           continue;
-        if (field[i] == 9) finalNumber++;
+        if (field[i] === undefined) continue;
+        if (field[i].bomb === true) finalNumber++;
       }
 
-      field[n] = finalNumber;
+      field[n] = {
+        ...field[n],
+        surrounds: finalNumber
+      };
     }
 
     this.matrix = field
@@ -182,7 +227,7 @@ class Mineswept {
   };
 
   rehydrate() {
-    if (!this.matrix) return
+    console.log('test!')
     if (this.grid === undefined) {
       const grid = document.createElement("div");
       grid.className = "grid";
@@ -190,17 +235,20 @@ class Mineswept {
       this.grid = grid
     }
     const rows = Array(this.height)
-      .fill("-1")
+      .fill(0)
       .map((_v, rowIndex) => {
         return Row(
           Array(this.width)
-            .fill("-1")
+            .fill(0)
             .map((_v, columnIndex) => {
               const dataId = rowIndex * this.width + columnIndex;
+              const data = this.matrix![dataId]
               return Button({
-                dataId: `${dataId}`,
-                bomb: this.matrix![dataId] === 9,
-                surrounds: this.matrix![dataId],
+                dataId: dataId,
+                matrix: this.matrix!,
+                setMatrix: (matrix: MatrixState[]) => this.matrix = matrix,
+                rehydrate: () => this.rehydrate(),
+                ...data
               });
             }),
           `${rowIndex}`
@@ -212,9 +260,8 @@ class Mineswept {
 }
 
 const canvas1 = document.querySelector("#app1");
-const canvas2 = document.querySelector("#app2");
+// const canvas2 = document.querySelector("#app2");
 
-if ( canvas1 && canvas2 ) {
+if ( canvas1 ) {
   new Mineswept(canvas1, 9, 12);
-  new Mineswept(canvas2, 9, 12);
 }
