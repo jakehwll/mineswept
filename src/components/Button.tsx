@@ -1,8 +1,9 @@
+import cc from "classcat";
+import { html } from "uhtml";
 import { MatrixState } from "../main";
 
 const Button = ({
   dataId,
-  rehydrate,
   revealNearby,
   matrix,
   setMatrix,
@@ -12,22 +13,11 @@ const Button = ({
   surroundingBombs,
 }: {
   dataId: number;
-  rehydrate(): void;
-  revealNearby({ index }: { index: number; }): void;
+  revealNearby({ index }: { index: number }): void;
   matrix: MatrixState[];
   setMatrix(val: MatrixState[]): void;
 } & MatrixState) => {
-  const el = document.createElement("button");
-  el.className = [""].join(" ");
-
-  el.setAttribute("data-id", `${dataId}`);
-  el.setAttribute("data-surround", `${surroundingBombs}`);
-
-  if (isBomb) el.className = ["bomb", ...el.className.split(" ")].join(" ");
-  if (isClicked) el.className = ["active", ...el.className.split(" ")].join(" ");
-  if (isFlagged) el.className = ["flagged", ...el.className.split(" ")].join(" ");
-
-  el.addEventListener("click", () => {
+  const onClick = () => {
     if (isClicked || isFlagged) return;
 
     let newMatrix = matrix;
@@ -46,35 +36,48 @@ const Button = ({
       tickSound.play();
     }
 
-    if ( surroundingBombs !== 0 ) {
-      if ( newMatrix[dataId].isFlagged ) return
+    if (surroundingBombs !== 0) {
+      if (newMatrix[dataId].isFlagged) return;
       newMatrix[dataId].isClicked = true;
       setMatrix(newMatrix);
     } else {
       revealNearby({ index: dataId });
     }
+  };
 
-    rehydrate();
-  });
+  const onContextMenu = (event: any) => {
+    event.preventDefault();
 
-  el.addEventListener("contextmenu", (event) => {
-    event.preventDefault()
+    if (isClicked) return;
 
-    if ( isClicked ) return
-
-    let newMatrix = matrix
+    let newMatrix = matrix;
 
     newMatrix[dataId] = {
       ...newMatrix[dataId],
-      isFlagged: !newMatrix[dataId].isFlagged
-    }
+      isFlagged: !newMatrix[dataId].isFlagged,
+    };
 
-    setMatrix(newMatrix)
+    setMatrix(newMatrix);
+  };
 
-    rehydrate();
-  })
+  const className = cc([
+    {
+      ["bomb"]: isBomb,
+      ["active"]: isClicked,
+      ["flagged"]: isFlagged,
+    },
+  ]);
 
-  return el;
+  const template = html`<button
+    type="button"
+    onclick=${() => onClick()}
+    oncontextmenu=${onContextMenu}
+    data-id="${dataId}"
+    data-surround="${surroundingBombs}"
+    class="${className}"
+  ></button>`;
+
+  return template;
 };
 
-export { Button }
+export { Button };

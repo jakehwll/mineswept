@@ -1,53 +1,54 @@
-import { Digit, Row, Button } from './components';
-import { preloadImage } from './helpers/assets';
+import { html, render } from "uhtml";
+import { Button, Digit } from "./components";
+import { preloadImage } from "./helpers/assets";
 
 export interface MatrixState {
-  isClicked: boolean
-  isBomb: boolean
-  isFlagged: boolean
-  surroundingBombs: number
+  isClicked: boolean;
+  isBomb: boolean;
+  isFlagged: boolean;
+  surroundingBombs: number;
 }
 
 const images = [
-  '/board/bomb-exploded.svg',
-  '/board/bomb.svg',
-  '/board/button.svg',
-  '/board/field.svg',
-  '/board/flag.svg',
-  '/board/number-1.svg',
-  '/board/number-2.svg',
-  '/board/number-3.svg',
-  '/board/number-4.svg',
-  '/board/number-5.svg',
-  '/board/number-6.svg',
-  '/board/number-7.svg',
-  '/board/number-8.svg',
-  '/border/inset-thick.svg',
-  '/border/inset-thin.svg',
-  '/border/inset.svg',
-  '/border/outset-thick.svg',
-  '/border/outset-thin.svg',
-  '/border/outset.svg',
-  '/digit/-.svg',
-  '/digit/0.svg',
-  '/digit/1.svg',
-  '/digit/2.svg',
-  '/digit/3.svg',
-  '/digit/4.svg',
-  '/digit/5.svg',
-  '/digit/6.svg',
-  '/digit/7.svg',
-  '/digit/8.svg',
-  '/digit/9.svg',
-  '/digit/_.svg',
-  '/faces/dead.svg',
-  '/faces/shock.svg',
-  '/faces/smile.svg',
-  '/faces/sunglasses.svg',
-  '/favicon.svg',
-]
+  "/board/bomb-exploded.svg",
+  "/board/bomb.svg",
+  "/board/button.svg",
+  "/board/field.svg",
+  "/board/flag.svg",
+  "/board/number-1.svg",
+  "/board/number-2.svg",
+  "/board/number-3.svg",
+  "/board/number-4.svg",
+  "/board/number-5.svg",
+  "/board/number-6.svg",
+  "/board/number-7.svg",
+  "/board/number-8.svg",
+  "/border/inset-thick.svg",
+  "/border/inset-thin.svg",
+  "/border/inset.svg",
+  "/border/outset-thick.svg",
+  "/border/outset-thin.svg",
+  "/border/outset.svg",
+  "/digit/-.svg",
+  "/digit/0.svg",
+  "/digit/1.svg",
+  "/digit/2.svg",
+  "/digit/3.svg",
+  "/digit/4.svg",
+  "/digit/5.svg",
+  "/digit/6.svg",
+  "/digit/7.svg",
+  "/digit/8.svg",
+  "/digit/9.svg",
+  "/digit/_.svg",
+  "/faces/dead.svg",
+  "/faces/shock.svg",
+  "/faces/smile.svg",
+  "/faces/sunglasses.svg",
+  "/favicon.svg",
+];
 
-images.map((url) => preloadImage(url))
+images.map((url) => preloadImage(url));
 
 class Mineswept {
   node: Element;
@@ -62,6 +63,7 @@ class Mineswept {
   timer: HTMLElement | undefined;
 
   bombs: number | undefined;
+  time = 0;
 
   constructor(node: Element, width: number, height: number) {
     this.node = node;
@@ -76,20 +78,7 @@ class Mineswept {
 
     const bombs = Digit("000");
 
-    const status = document.createElement("button");
-    status.setAttribute("type", "button");
-
-    const statusImage = document.createElement("img");
-    statusImage.setAttribute("src", "/faces/smile.svg");
-    status.appendChild(statusImage);
-
-    const timer = document.createElement("div");
-    timer.className = "timer";
-    this.timer = timer;
-
     header.appendChild(bombs);
-    header.appendChild(status);
-    header.appendChild(timer);
     this.node.appendChild(header);
   }
 
@@ -101,13 +90,10 @@ class Mineswept {
   }
 
   initTimer() {
-    let time = 0;
-    this.timer!.appendChild(Digit(String(time).padStart(3, "0")));
     setInterval(() => {
-      if ( time > 999 ) return
-      time = time + 1;
-      this.timer!.innerHTML = "";
-      this.timer!.appendChild(Digit(String(time).padStart(3, "0")));
+      if (this.time > 999) return;
+      this.time = this.time + 1;
+      console.log("a");
     }, 1000);
   }
 
@@ -126,18 +112,18 @@ class Mineswept {
   }) {
     if (matrix[index].isClicked) return;
 
-    const newMatrix = matrix
+    const newMatrix = matrix;
     newMatrix[index].isClicked = true;
-    setMatrix(newMatrix)
+    setMatrix(newMatrix);
 
-    if ( matrix[index].surroundingBombs === 0 && !(matrix[index].isBomb) ) {
+    if (matrix[index].surroundingBombs === 0 && !matrix[index].isBomb) {
       const numbers = [-1, 1, -width, width];
       const validNumbers = numbers.filter((x) => {
         const newIndex = index + x;
         // out of bound
         if (newIndex < 0 || newIndex + 1 > size) return;
         // start of row
-        if (!(newIndex % width) && x === 1 ) return;
+        if (!(newIndex % width) && x === 1) return;
         // end of row
         if (!((newIndex + 1) % width) && x === -1) return;
         return x;
@@ -145,8 +131,17 @@ class Mineswept {
 
       validNumbers.map((x) => {
         const newIndex = index + x;
-        if ( matrix[newIndex].surroundingBombs === 0 && !(matrix[newIndex].isBomb) ) {
-          this.revealNearby({ index: index + x, width, size, matrix, setMatrix });
+        if (
+          matrix[newIndex].surroundingBombs === 0 &&
+          !matrix[newIndex].isBomb
+        ) {
+          this.revealNearby({
+            index: index + x,
+            width,
+            size,
+            matrix,
+            setMatrix,
+          });
         } else {
           const newMatrix = matrix;
           newMatrix[newIndex].isClicked = true;
@@ -157,10 +152,54 @@ class Mineswept {
   }
 
   init() {
-    this.initHeader();
-    this.initBoard();
-    this.initTimer();
     this.generateGrid(this.width, this.height);
+    this.initTimer();
+    const app = html`
+      <header>
+        ${Digit("000")}
+        <button type="button">
+          <img src="/faces/smile.svg" />
+        </button>
+        <div>${this.time}</div>
+        ${Digit(`${this.time ?? 0}`)}
+      </header>
+      <main class="board">
+        <section class="grid">
+          ${Array(this.height)
+            .fill(0)
+            .map(
+              (_v, y) => html`<div>
+                ${Array(this.width)
+                  .fill(0)
+                  .map((_v, x) => {
+                    const data = this.matrix![x * this.width + y];
+                    return html.for(data)`${Button({
+                      dataId: y * this.width + x,
+                      matrix: this.matrix!,
+                      setMatrix: (matrix: MatrixState[]) => {
+                        console.log("set it uwu");
+                        console.log(JSON.stringify(matrix));
+                        this.matrix = matrix;
+                      },
+                      revealNearby: ({ index }: { index: number }) =>
+                        this.revealNearby({
+                          index,
+                          width: this.width,
+                          size: this.width * this.height,
+                          matrix: this.matrix!,
+                          setMatrix: (matrix: MatrixState[]) =>
+                            (this.matrix = matrix),
+                        }),
+                      ...data,
+                    })}`;
+                  })}
+              </div>`
+            )}
+        </section>
+        <footer>${JSON.stringify(this.matrix)}</footer>
+      </main>
+    `;
+    render(this.node, app);
   }
 
   generateGrid = (width: number, height: number) => {
@@ -231,52 +270,11 @@ class Mineswept {
     }
 
     this.matrix = field;
-    this.rehydrate();
   };
-
-  rehydrate() {
-    if (this.grid === undefined) {
-      const grid = document.createElement("div");
-      grid.className = "grid";
-      this.board?.appendChild(grid);
-      this.grid = grid;
-    }
-    const rows = Array(this.height)
-      .fill(0)
-      .map((_v, rowIndex) => {
-        return Row(
-          Array(this.width)
-            .fill(0)
-            .map((_v, columnIndex) => {
-              const dataId = rowIndex * this.width + columnIndex;
-              const data = this.matrix![dataId];
-              return Button({
-                dataId: dataId,
-                matrix: this.matrix!,
-                setMatrix: (matrix: MatrixState[]) => (this.matrix = matrix),
-                revealNearby: ({ index }: { index: number }) =>
-                  this.revealNearby({
-                    index,
-                    width: this.width,
-                    size: this.width * this.height,
-                    matrix: this.matrix!,
-                    setMatrix: (matrix: MatrixState[]) =>
-                      (this.matrix = matrix),
-                  }),
-                rehydrate: () => this.rehydrate(),
-                ...data,
-              });
-            }),
-          `${rowIndex}`
-        );
-      });
-    this.grid.innerHTML = "";
-    rows.map((v) => this.grid!.appendChild(v));
-  }
 }
 
 const canvas1 = document.querySelector("#app1");
 
-if ( canvas1 ) {
+if (canvas1) {
   new Mineswept(canvas1, 9, 12);
 }

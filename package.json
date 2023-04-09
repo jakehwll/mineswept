@@ -11,5 +11,9 @@
   "devDependencies": {
     "typescript": "^4.9.3",
     "vite": "^4.2.0"
+  },
+  "dependencies": {
+    "classcat": "^5.0.4",
+    "uhtml": "^3.1.0"
   }
 }
