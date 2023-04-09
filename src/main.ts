@@ -104,6 +104,7 @@ class Mineswept {
     let time = 0;
     this.timer!.appendChild(Digit(String(time).padStart(3, "0")));
     setInterval(() => {
+      if ( time > 999 ) return
       time = time + 1;
       this.timer!.innerHTML = "";
       this.timer!.appendChild(Digit(String(time).padStart(3, "0")));
